@@ -1,0 +1,447 @@
+# Diet Tracking API Test File
+# Use with VS Code REST Client extension
+# Make sure to set your JWT token after logging in
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+# Replace this with your actual JWT token after login
+@authToken = YOUR_JWT_TOKEN_HERE
+
+###############################################################################
+# AUTHENTICATION (Get your token first!)
+###############################################################################
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "diettest@example.com",
+  "username": "diettest",
+  "password": "password123",
+  "first_name": "Diet",
+  "last_name": "Tester"
+}
+
+### Login (Copy the token from response)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "emailOrUsername": "diettest@example.com",
+  "password": "password123"
+}
+
+###############################################################################
+# USDA FOOD SEARCH
+###############################################################################
+
+### Search for foods - Chicken
+GET {{baseUrl}}/diet/search?query=chicken%20breast
+Content-Type: {{contentType}}
+
+### Search for foods - Branded Cheddar
+GET {{baseUrl}}/diet/search?query=cheddar&dataType=Branded&pageSize=10
+Content-Type: {{contentType}}
+
+### Search for foods - Apple (all data types)
+GET {{baseUrl}}/diet/search?query=apple&pageSize=25&pageNumber=1
+Content-Type: {{contentType}}
+
+### Search for foods - Oatmeal
+GET {{baseUrl}}/diet/search?query=oatmeal
+Content-Type: {{contentType}}
+
+### Search for foods - Survey foods only
+GET {{baseUrl}}/diet/search?query=banana&dataType=Survey%20(FNDDS)
+Content-Type: {{contentType}}
+
+###############################################################################
+# FOOD DETAILS (Cache-first lookup)
+###############################################################################
+
+### Get food details - Chicken breast (FDC ID: 171705)
+GET {{baseUrl}}/diet/food/171705
+Content-Type: {{contentType}}
+
+### Get food details - Apple (FDC ID: 171688)
+GET {{baseUrl}}/diet/food/171688
+Content-Type: {{contentType}}
+
+### Get food details - Cheddar cheese (FDC ID: 173419)
+GET {{baseUrl}}/diet/food/173419
+Content-Type: {{contentType}}
+
+### Get food details - Invalid FDC ID (should error)
+GET {{baseUrl}}/diet/food/999999999
+Content-Type: {{contentType}}
+
+###############################################################################
+# RECENT FOODS (Requires Authentication)
+###############################################################################
+
+### Get recently used foods
+GET {{baseUrl}}/diet/recent
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get frequently used foods
+GET {{baseUrl}}/diet/recent?sortBy=frequent&limit=20
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get top 10 recent foods
+GET {{baseUrl}}/diet/recent?limit=10
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+###############################################################################
+# NUTRITION GOALS
+###############################################################################
+
+### Get active nutrition goal
+GET {{baseUrl}}/diet/goals
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get all nutrition goals (active and inactive)
+GET {{baseUrl}}/diet/goals?active=false
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Create nutrition goal
+POST {{baseUrl}}/diet/goals
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "daily_calories": 2000,
+  "daily_protein_g": 150,
+  "daily_carbs_g": 200,
+  "daily_fat_g": 65,
+  "is_active": true
+}
+
+### Create minimal nutrition goal (only calories)
+POST {{baseUrl}}/diet/goals
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "daily_calories": 1800,
+  "is_active": true
+}
+
+### Update nutrition goal (replace :id with actual goal ID)
+PUT {{baseUrl}}/diet/goals/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "daily_calories": 2200,
+  "daily_protein_g": 165
+}
+
+### Delete nutrition goal (replace :id with actual goal ID)
+DELETE {{baseUrl}}/diet/goals/1
+Authorization: Bearer {{authToken}}
+
+###############################################################################
+# FOOD ENTRIES (Logging)
+###############################################################################
+
+### Log breakfast - Oatmeal
+POST {{baseUrl}}/diet/entries
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "fdc_id": 173904,
+  "food_name": "Oatmeal, cooked",
+  "data_type": "Survey (FNDDS)",
+  "serving_size": 150,
+  "serving_unit": "g",
+  "calories": 71,
+  "protein_g": 2.5,
+  "carbs_g": 12,
+  "fat_g": 1.5,
+  "fiber_g": 1.7,
+  "meal_type": "breakfast",
+  "consumed_at": "2025-01-15T08:00:00Z",
+  "notes": "With berries and honey"
+}
+
+### Log lunch - Chicken breast
+POST {{baseUrl}}/diet/entries
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "fdc_id": 171705,
+  "food_name": "Chicken breast, grilled",
+  "data_type": "Survey (FNDDS)",
+  "serving_size": 200,
+  "serving_unit": "g",
+  "calories": 330,
+  "protein_g": 62,
+  "carbs_g": 0,
+  "fat_g": 7.2,
+  "fiber_g": 0,
+  "meal_type": "lunch",
+  "consumed_at": "2025-01-15T12:30:00Z",
+  "notes": "Post-workout meal"
+}
+
+### Log dinner - Salmon
+POST {{baseUrl}}/diet/entries
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "fdc_id": 175167,
+  "food_name": "Salmon, Atlantic, cooked",
+  "serving_size": 150,
+  "serving_unit": "g",
+  "calories": 280,
+  "protein_g": 30,
+  "carbs_g": 0,
+  "fat_g": 17,
+  "fiber_g": 0,
+  "meal_type": "dinner",
+  "consumed_at": "2025-01-15T19:00:00Z"
+}
+
+### Log snack - Apple
+POST {{baseUrl}}/diet/entries
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "fdc_id": 171688,
+  "food_name": "Apple, raw",
+  "serving_size": 182,
+  "serving_unit": "g",
+  "calories": 95,
+  "protein_g": 0.5,
+  "carbs_g": 25,
+  "fat_g": 0.3,
+  "fiber_g": 4.4,
+  "meal_type": "snack"
+}
+
+### Log minimal entry (required fields only)
+POST {{baseUrl}}/diet/entries
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "fdc_id": 171705,
+  "food_name": "Chicken breast",
+  "serving_size": 100,
+  "serving_unit": "g"
+}
+
+###############################################################################
+# GET FOOD ENTRIES
+###############################################################################
+
+### Get all food entries for user
+GET {{baseUrl}}/diet/entries
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get food entries for specific date
+GET {{baseUrl}}/diet/entries?date=2025-01-15
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get food entries for date range
+GET {{baseUrl}}/diet/entries?startDate=2025-01-01&endDate=2025-01-31
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get food entries by meal type
+GET {{baseUrl}}/diet/entries?mealType=lunch
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get breakfast entries for a specific date
+GET {{baseUrl}}/diet/entries?date=2025-01-15&mealType=breakfast
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get food entries with pagination
+GET {{baseUrl}}/diet/entries?limit=10&offset=0
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get specific food entry (replace :id with actual entry ID)
+GET {{baseUrl}}/diet/entries/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+###############################################################################
+# UPDATE FOOD ENTRIES
+###############################################################################
+
+### Update food entry - Change serving size (replace :id)
+PUT {{baseUrl}}/diet/entries/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "serving_size": 250,
+  "calories": 412.5,
+  "protein_g": 77.5,
+  "notes": "Updated - ate more than planned"
+}
+
+### Update food entry - Change meal type (replace :id)
+PUT {{baseUrl}}/diet/entries/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "meal_type": "dinner",
+  "consumed_at": "2025-01-15T19:30:00Z"
+}
+
+### Update food entry - Add notes only (replace :id)
+PUT {{baseUrl}}/diet/entries/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "notes": "Felt great after this meal"
+}
+
+###############################################################################
+# DELETE FOOD ENTRIES
+###############################################################################
+
+### Delete food entry (replace :id with actual entry ID)
+DELETE {{baseUrl}}/diet/entries/1
+Authorization: Bearer {{authToken}}
+
+###############################################################################
+# DAILY SUMMARY
+###############################################################################
+
+### Get today's nutrition summary
+GET {{baseUrl}}/diet/summary
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get summary for specific date
+GET {{baseUrl}}/diet/summary?date=2025-01-15
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+### Get summary for different date
+GET {{baseUrl}}/diet/summary?date=2025-01-10
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+###############################################################################
+# COMPLETE WORKFLOW EXAMPLE
+###############################################################################
+
+### STEP 1: Login and get token
+# POST {{baseUrl}}/auth/login
+# Copy the token to @authToken variable above
+
+### STEP 2: Set nutrition goals
+# POST {{baseUrl}}/diet/goals
+# {
+#   "daily_calories": 2000,
+#   "daily_protein_g": 150,
+#   "daily_carbs_g": 200,
+#   "daily_fat_g": 65
+# }
+
+### STEP 3: Search for foods
+# GET {{baseUrl}}/diet/search?query=chicken
+
+### STEP 4: Get food details
+# GET {{baseUrl}}/diet/food/171705
+
+### STEP 5: Log the food
+# POST {{baseUrl}}/diet/entries
+# {
+#   "fdc_id": 171705,
+#   "food_name": "Chicken breast",
+#   "serving_size": 200,
+#   "serving_unit": "g",
+#   "calories": 330,
+#   "protein_g": 62,
+#   "meal_type": "lunch"
+# }
+
+### STEP 6: Check daily summary
+# GET {{baseUrl}}/diet/summary
+
+### STEP 7: View recent foods
+# GET {{baseUrl}}/diet/recent
+
+###############################################################################
+# ERROR CASES (For testing error handling)
+###############################################################################
+
+### Missing required field - no query parameter
+GET {{baseUrl}}/diet/search
+Content-Type: {{contentType}}
+
+### Invalid FDC ID format
+GET {{baseUrl}}/diet/food/invalid
+Content-Type: {{contentType}}
+
+### Unauthorized - no token
+GET {{baseUrl}}/diet/recent
+Content-Type: {{contentType}}
+
+### Log food without required fields
+POST {{baseUrl}}/diet/entries
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "fdc_id": 171705
+}
+
+### Update non-existent entry
+PUT {{baseUrl}}/diet/entries/999999
+Content-Type: {{contentType}}
+Authorization: Bearer {{authToken}}
+
+{
+  "notes": "This should fail"
+}
+
+### Delete non-existent entry
+DELETE {{baseUrl}}/diet/entries/999999
+Authorization: Bearer {{authToken}}
+
+###############################################################################
+# NOTES
+###############################################################################
+
+# Common FDC IDs for testing:
+# 171705 - Chicken breast, grilled
+# 171688 - Apple, raw
+# 173419 - Cheddar cheese
+# 173904 - Oatmeal, cooked
+# 175167 - Salmon, Atlantic, cooked
+# 170148 - Banana, raw
+# 169967 - Eggs, whole, raw
+
+# Meal Types:
+# - breakfast
+# - lunch
+# - dinner
+# - snack
+
+# Data Types:
+# - Branded
+# - Survey (FNDDS)
+# - Foundation
+# - SR Legacy

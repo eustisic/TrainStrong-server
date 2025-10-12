@@ -1,0 +1,179 @@
+# Train Strong API Test File
+# Use with VS Code REST Client extension
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### Health Check
+GET http://localhost:3000/health
+
+### Welcome
+GET http://localhost:3000/
+
+###
+# EXERCISE ENDPOINTS
+###
+
+### Get all workouts
+GET {{baseUrl}}/workouts
+Content-Type: {{contentType}}
+
+### Get workouts with search
+GET {{baseUrl}}/workouts?search=bench
+Content-Type: {{contentType}}
+
+### Get workouts by category
+GET {{baseUrl}}/workouts?category=strength
+Content-Type: {{contentType}}
+
+### Get specific workout
+GET {{baseUrl}}/workouts/1
+Content-Type: {{contentType}}
+
+### Create new workout
+POST {{baseUrl}}/workouts
+Content-Type: {{contentType}}
+
+{
+  "name": "Test Workout",
+  "category": "strength",
+  "equipment": "dumbbell",
+  "description": "A test workout",
+  "instructions": "Perform the workout correctly",
+  "workout_data": {
+    "type": "strength",
+    "sets": 3,
+    "reps": 12,
+    "weight_kg": 20,
+    "rest_seconds": 60
+  },
+  "is_public": true
+}
+
+### Delete workout
+POST {{baseUrl}}/workouts/delete
+Content-Type: {{contentType}}
+
+{
+  "id": 1
+}
+
+###
+# WORKOUT ENDPOINTS
+###
+
+### Get workouts for a user
+GET {{baseUrl}}/workouts?user_id=1
+Content-Type: {{contentType}}
+
+### Get workouts with date range
+GET {{baseUrl}}/workouts?user_id=1&start_date=2024-01-01&end_date=2024-12-31
+Content-Type: {{contentType}}
+
+### Get specific workout
+GET {{baseUrl}}/workouts/1
+Content-Type: {{contentType}}
+
+### Create workout from workout (automatic)
+POST {{baseUrl}}/workouts
+Content-Type: {{contentType}}
+
+{
+  "user_id": 1,
+  "workout_id": 1,
+  "notes": "Good workout session"
+}
+
+### Create workout with custom data
+POST {{baseUrl}}/workouts
+Content-Type: {{contentType}}
+
+{
+  "user_id": 1,
+  "workout_id": 1,
+  "completed_workout_data": {
+    "name": "Bench Press",
+    "category": "strength",
+    "equipment": "barbell",
+    "description": "Chest workout",
+    "instructions": "Lower bar to chest, press up",
+    "workout_data": {
+      "type": "strength",
+      "sets": 3,
+      "reps": 10,
+      "weight_kg": 80,
+      "rest_seconds": 90
+    },
+    "performed_sets": 3,
+    "performed_reps": 10,
+    "performed_weight_kg": 75
+  },
+  "notes": "Reduced weight slightly today"
+}
+
+### Delete workout
+POST {{baseUrl}}/workouts/delete
+Content-Type: {{contentType}}
+
+{
+  "id": 1
+}
+
+###
+# DASHBOARD ENDPOINT
+###
+
+### Get dashboard data
+GET {{baseUrl}}/dashboard?user_id=1
+Content-Type: {{contentType}}
+
+### Get dashboard data for last 7 days
+GET {{baseUrl}}/dashboard?user_id=1&days=7
+Content-Type: {{contentType}}
+
+###
+# SAMPLE DATA CREATION FLOW
+###
+
+### 1. First create a user (you'll need to implement user endpoints)
+# POST {{baseUrl}}/users
+# {
+#   "email": "test@example.com",
+#   "username": "testuser",
+#   "password_hash": "hashed_password",
+#   "first_name": "Test",
+#   "last_name": "User"
+# }
+
+### 2. Create some workouts
+POST {{baseUrl}}/workouts
+Content-Type: {{contentType}}
+
+{
+  "name": "Push-ups",
+  "category": "strength",
+  "equipment": "bodyweight",
+  "description": "Bodyweight chest workout",
+  "instructions": "Start in plank position, lower chest to ground, push back up",
+  "workout_data": {
+    "type": "strength",
+    "sets": 3,
+    "reps": 15,
+    "rest_seconds": 60
+  },
+  "is_public": true
+}
+
+### 3. Create some workouts
+POST {{baseUrl}}/workouts
+Content-Type: {{contentType}}
+
+{
+  "user_id": 1,
+  "workout_id": 1,
+  "notes": "First workout of the day"
+}
+
+### 4. Check dashboard
+GET {{baseUrl}}/dashboard?user_id=1&days=30
+Content-Type: {{contentType}}
