@@ -3,11 +3,12 @@ import { PlanModel } from '../models/plan.model.js';
 import { PlanWorkoutModel } from '../models/planWorkout.model.ts';
 import { UserPlanModel } from '../models/userPlan.model.js';
 import { CreatePlanInput } from '../types/database.types.js';
+import { authenticateToken, optionalAuth } from '../middleware/auth.js';
 
 const router = Router();
 
 // GET /plans - List plans with optional filters
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', optionalAuth, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     const { subscribed, created_by_me, limit = 100, offset = 0 } = req.query;
@@ -36,7 +37,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /plans/:id - Get plan details with workouts
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', optionalAuth, async (req: Request, res: Response) => {
   try {
     const planId = parseInt(req.params.id);
     const userId = (req as any).user?.id;
@@ -72,7 +73,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /plans - Create new plan
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -106,7 +107,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /plans/:id - Update plan including workouts
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -148,7 +149,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /plans/:id - Delete plan
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -176,7 +177,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /plans/:id/subscribe - Subscribe to a plan
-router.post('/:id/subscribe', async (req: Request, res: Response) => {
+router.post('/:id/subscribe', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -215,7 +216,7 @@ router.post('/:id/subscribe', async (req: Request, res: Response) => {
 });
 
 // POST /plans/:id/unsubscribe - Unsubscribe from a plan
-router.post('/:id/unsubscribe', async (req: Request, res: Response) => {
+router.post('/:id/unsubscribe', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -240,7 +241,7 @@ router.post('/:id/unsubscribe', async (req: Request, res: Response) => {
 });
 
 // PUT /plans/subscriptions/:userPlanId - Update subscription status
-router.put('/subscriptions/:userPlanId', async (req: Request, res: Response) => {
+router.put('/subscriptions/:userPlanId', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -270,7 +271,7 @@ router.put('/subscriptions/:userPlanId', async (req: Request, res: Response) => 
 });
 
 // PUT /plans/subscriptions/:userPlanId/reschedule - Reschedule a plan with a new start date
-router.put('/subscriptions/:userPlanId/reschedule', async (req: Request, res: Response) => {
+router.put('/subscriptions/:userPlanId/reschedule', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -297,7 +298,7 @@ router.put('/subscriptions/:userPlanId/reschedule', async (req: Request, res: Re
 });
 
 // DELETE /plans/subscriptions/:userPlanId - Delete a user plan subscription
-router.delete('/subscriptions/:userPlanId', async (req: Request, res: Response) => {
+router.delete('/subscriptions/:userPlanId', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {

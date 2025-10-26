@@ -96,57 +96,6 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{authToken}}
 
 ###############################################################################
-# NUTRITION GOALS
-###############################################################################
-
-### Get active nutrition goal
-GET {{baseUrl}}/diet/goals
-Content-Type: {{contentType}}
-Authorization: Bearer {{authToken}}
-
-### Get all nutrition goals (active and inactive)
-GET {{baseUrl}}/diet/goals?active=false
-Content-Type: {{contentType}}
-Authorization: Bearer {{authToken}}
-
-### Create nutrition goal
-POST {{baseUrl}}/diet/goals
-Content-Type: {{contentType}}
-Authorization: Bearer {{authToken}}
-
-{
-  "daily_calories": 2000,
-  "daily_protein_g": 150,
-  "daily_carbs_g": 200,
-  "daily_fat_g": 65,
-  "is_active": true
-}
-
-### Create minimal nutrition goal (only calories)
-POST {{baseUrl}}/diet/goals
-Content-Type: {{contentType}}
-Authorization: Bearer {{authToken}}
-
-{
-  "daily_calories": 1800,
-  "is_active": true
-}
-
-### Update nutrition goal (replace :id with actual goal ID)
-PUT {{baseUrl}}/diet/goals/1
-Content-Type: {{contentType}}
-Authorization: Bearer {{authToken}}
-
-{
-  "daily_calories": 2200,
-  "daily_protein_g": 165
-}
-
-### Delete nutrition goal (replace :id with actual goal ID)
-DELETE {{baseUrl}}/diet/goals/1
-Authorization: Bearer {{authToken}}
-
-###############################################################################
 # FOOD ENTRIES (Logging)
 ###############################################################################
 

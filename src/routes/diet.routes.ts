@@ -4,6 +4,7 @@ import { FoodEntryModel } from '../models/foodEntry.model.js';
 import { NutritionGoalModel } from '../models/nutritionGoal.model.js';
 import { USDAService } from '../services/usda.service.js';
 import { CreateFoodEntryInput } from '../types/database.types.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -83,7 +84,7 @@ router.get('/food/:fdcId', async (req: Request, res: Response) => {
 });
 
 // GET /diet/recent - Get user's recently used foods
-router.get('/recent', async (req: Request, res: Response) => {
+router.get('/recent', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -121,7 +122,7 @@ router.get('/recent', async (req: Request, res: Response) => {
 // ============================================================================
 
 // POST /diet/entries - Log food consumed
-router.post('/entries', async (req: Request, res: Response) => {
+router.post('/entries', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -163,7 +164,7 @@ router.post('/entries', async (req: Request, res: Response) => {
 });
 
 // GET /diet/entries - Get user's food log
-router.get('/entries', async (req: Request, res: Response) => {
+router.get('/entries', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -213,7 +214,7 @@ router.get('/entries', async (req: Request, res: Response) => {
 });
 
 // GET /diet/entries/:id - Get specific food entry
-router.get('/entries/:id', async (req: Request, res: Response) => {
+router.get('/entries/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -254,7 +255,7 @@ router.get('/entries/:id', async (req: Request, res: Response) => {
 });
 
 // PUT /diet/entries/:id - Update food entry
-router.put('/entries/:id', async (req: Request, res: Response) => {
+router.put('/entries/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -297,7 +298,7 @@ router.put('/entries/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /diet/entries/:id - Delete food entry
-router.delete('/entries/:id', async (req: Request, res: Response) => {
+router.delete('/entries/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -337,7 +338,7 @@ router.delete('/entries/:id', async (req: Request, res: Response) => {
 });
 
 // GET /diet/summary - Daily nutrition summary
-router.get('/summary', async (req: Request, res: Response) => {
+router.get('/summary', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
